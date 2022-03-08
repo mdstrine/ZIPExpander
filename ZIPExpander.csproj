@@ -13,17 +13,17 @@
     <Platforms>AnyCPU;x64</Platforms>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <ApplicationIcon>td-icon-8.ico</ApplicationIcon>
-    <AssemblyVersion>0.9.1</AssemblyVersion>
-    <Version>0.9.1</Version>
+    <AssemblyVersion>0.9.2</AssemblyVersion>
+    <Version>0.9.2</Version>
     <Company>Veeam Software</Company>
     <Product>Total Decompression</Product>
     <PackageIcon>td icon 8.png</PackageIcon>
     <Authors>Henrik/Dino Chiesa,rpastric,contre,dahall</Authors>
     <Description>Please report any problems to Michael Strine via msteams or michael.strine@veeam.com
 
-v0.9.1 build date: 3/8/2022</Description>
+v0.9.2 build date: 3/8/2022</Description>
     <Copyright>Created by Michael Strine</Copyright>
-    <FileVersion>0.9.1</FileVersion>
+    <FileVersion>0.9.2</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
