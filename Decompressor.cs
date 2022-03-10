@@ -17,16 +17,19 @@ namespace ZIPExpander
     //extraction methods won't be ran (like closing the UI)
     internal class Decompressor
     {
-
-        public static async Task<bool> RunDecompressor(IProgress<int> progress, IProgress<int> progressWorking, IProgress<string> progressFile, IProgress<string> progressWorkingFile, string SourcePath, string TargetPath)
+        //theres a file naming problem rn, if the target already has a file with the name it will be overwitten, even if it was just decompressed
+        //appending is difficult becuase the file name isn't created until during the unzip. 
+        //could compare the directory to see if any files with the name appear and append, BUT if we try to overwrite a target which has 
+        //already been written to before its going to rename every single previously decompressed file...
+        public static async Task<string> RunDecompressor(IProgress<int> progress, IProgress<int> progressWorking, IProgress<string> progressFile, IProgress<string> progressWorkingFile, string sourcePath, string targetPath)
         {
             //If its a .zip decompress it
-            if (Path.GetExtension(SourcePath) == ".zip")
+            if (Path.GetExtension(sourcePath) == ".zip")
             {
                 try
                 {
                     //instanciate a zipfile instanace and open the file for read
-                    using ZipFile zip = ZipFile.Read(SourcePath);
+                    using ZipFile zip = ZipFile.Read(sourcePath);
 
                     //collect events from dotnetzip for progress reporting
                     zip.ExtractProgress += (sender, e) =>
@@ -44,9 +47,16 @@ namespace ZIPExpander
 
                     };
 
-                    //run the actual task
-                    await Task.Run(() => zip.ExtractAll(TargetPath, ExtractExistingFileAction.OverwriteSilently));
-                    return true;
+                    try
+                    {
+                        //run the actual task
+                        await Task.Run(() => zip.ExtractAll(targetPath, ExtractExistingFileAction.OverwriteSilently));
+                        return targetPath;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.ToString());
+                    }
 
                 }
                 //bubble exceptions up to the UI thread
@@ -58,24 +68,24 @@ namespace ZIPExpander
             }
 
             //else if its a .gz decompress gz
-            else if (Path.GetExtension(SourcePath) == ".gz")
+            else if (Path.GetExtension(sourcePath) == ".gz")
             {
                 try
                 {
                     //fix the target path as this library requires the file name in the target path
-                    string TargetPathFixed = TargetPath + "\\" + Path.GetFileNameWithoutExtension(SourcePath);
+                    string targetPathFixed = targetPath + "\\" + Path.GetFileNameWithoutExtension(sourcePath);
                     //change the UI to show the current file being worked on
                     //theres no simple way to calculate a progress bar with this library
-                    progressFile.Report(SourcePath);
-                    progressWorkingFile.Report(SourcePath);
+                    progressFile.Report(sourcePath);
+                    progressWorkingFile.Report(sourcePath);
                     //open the input and output files then direct the stream to decompress
-                    using (var input = File.OpenRead(SourcePath))
-                    using (var output = File.OpenWrite(TargetPathFixed))
+                    using (var input = File.OpenRead(sourcePath))
+                    using (var output = File.OpenWrite(targetPathFixed))
                     using (var gz = new GZipStream(input, CompressionMode.Decompress))
                     {
                         await gz.CopyToAsync(output);
                     }
-                    return true;
+                    return targetPathFixed;
                 }
                 //bubble exceptions up to the UI thread
                 catch (Exception ex)
@@ -87,7 +97,7 @@ namespace ZIPExpander
             //is not a .zip or .gz, do nothing.
             else
             {
-                return false;
+                return "";
             }
 
 

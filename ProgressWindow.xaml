@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ZIPExpander"
         mc:Ignorable="d"
         Title="ProgressWindow" Height="262" Width="350" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterOwner" WindowState="Normal">
-    <Grid>
+    <Grid Focusable="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>
             <ColumnDefinition Width="0*"/>
@@ -44,3 +44,5 @@
 
     </Grid>
 </Window>
+
+    

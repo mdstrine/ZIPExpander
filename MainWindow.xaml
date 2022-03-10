@@ -27,4 +27,10 @@
         <!--<Button x:Name="DbugMakeListBtn" Grid.Column="1" Content="MAKE LIST" HorizontalAlignment="Left" Height="37" Margin="38,439,0,0" VerticalAlignment="Top" Width="77" Click="DbugMakeListBtn_Click"/>-->
 
     </Grid>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="taskBarItemInfo1" 
+                         ThumbnailClipMargin="80,0,80,140"
+                         Description="Total Decompression">
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
 </Window>
