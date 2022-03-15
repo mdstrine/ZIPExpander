@@ -28,14 +28,20 @@ namespace ZIPExpander
             {
                 try
                 {
+                    //need to check the size of the file or make sure it's actually a zip?
+                    if(new FileInfo(sourcePath).Length == 0)
+                    {
+                        return "";
+                    }
+
                     //instanciate a zipfile instanace and open the file for read
                     using ZipFile zip = ZipFile.Read(sourcePath);
-
+                   
                     //collect events from dotnetzip for progress reporting
                     zip.ExtractProgress += (sender, e) =>
                     {                        
                         if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
-                        {
+                        {   
                             progressWorking.Report((int)(1.0d / e.TotalBytesToTransfer * e.BytesTransferred * 100.0d));
                             progressWorkingFile.Report(e.CurrentEntry.ToString());
                         }
@@ -44,6 +50,7 @@ namespace ZIPExpander
                             progress.Report((int)(1.0d / e.EntriesTotal * e.EntriesExtracted * 100.0d));
                             progressFile.Report(e.ArchiveName.ToString());
                         }
+                       
 
                     };
 

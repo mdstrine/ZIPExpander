@@ -18,9 +18,9 @@ namespace ZIPExpander
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ZIPExpanderWindow : Window
     {
-        public MainWindow()
+        public ZIPExpanderWindow()
         {
             InitializeComponent();
         }
@@ -109,6 +109,7 @@ namespace ZIPExpander
         //This is the main exectuion of the program
         private async void ExtractBtn_Click(object sender, RoutedEventArgs e)
         {
+
             //set inputs to local variables
             string sourceTextPath = SourceTextBx.Text;
             string targetTextPath = TargetTextBx.Text;
@@ -141,9 +142,10 @@ namespace ZIPExpander
                 {
                     string decompressResult = "";
                     string decompressLoopResult = "";
-                    int compressedItemsProcessed = 0;
-                    int totalItemsProcessed = 0;
-                    int itemsLeft = 0;
+                    int numCompressedItemsProcessed = 0;
+                    int numUnCompressedItemsProcessed = 0;
+                    int numTotalItemsProcessed = 0;
+                    int numItemsLeft = 0;
                     bool copyItems = false;
                     bool deleteFromDecompressedItems = false;
                     List<string> decompressedCompressedItemList = new();
@@ -154,9 +156,18 @@ namespace ZIPExpander
                     //also need to delete compressed files extracted from the new source in this case
                     if (Path.GetExtension(sourceTextPath) == ".zip")
                     {
-                        progressWindow.OverallTextBlk.Text = "Unzipping source file...";
+                        progressWindow.OverallTxt.Text = "Unzipping source file...";
+
                         //run decompressor once
-                        await Task.Run(() => Decompressor.RunDecompressor(progressCur, progressWorking, progressFileName, progressWorkingFileName, sourceTextPath, targetTextPath));
+                        try
+                        {
+                            await Task.Run(() => Decompressor.RunDecompressor(progressCur, progressWorking, progressFileName, progressWorkingFileName, sourceTextPath, targetTextPath));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.ToString());
+                        }
+
                         //extracted files are now the source to expaand the rest
                         sourceTextPath = targetTextPath;
                         copyItems = false;
@@ -181,15 +192,18 @@ namespace ZIPExpander
                     List<string> uncompressedItemListScrubbed = uncompressedItemList.Except(compressedItemList).ToList();
 
                     //get file counts for progress reports
-                    int compressedItems = compressedItemList.Count;
-                    int unCompressedItems = uncompressedItemListScrubbed.Count;
-                    int totalItems = compressedItems;
+                    int numCompressedItems = compressedItemList.Count;
+                    int numUnCompressedItems = uncompressedItemListScrubbed.Count;
+                    int numTotalItems = numCompressedItems;
 
                     //prevent odd behavior if nothing to copy, probably need to use something
-                    //other than an exception but don't want exectuion to continue if this is hit.
-                    if (compressedItems == 0)
+                    if (numCompressedItems == 0)
                     {
-                        throw new Exception("Source has nothing to decompress!");
+
+                        MessageBox.Show(string.Format("No compressed items were found within in the source \r\n\r\nIf the source was a .zip, it was extracted to the target, however no further compressed items were found."), "Notice",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        progressWindow.Close();
+
                     }
 
                     //if entered source and target folders are the same, don't copy files as we cant make a copy of an existing file
@@ -201,11 +215,11 @@ namespace ZIPExpander
                     //if copying files, add them to the total item count for progress reporting
                     if (copyItems)
                     {
-                        totalItems += uncompressedItemListScrubbed.Count;
+                        numTotalItems += uncompressedItemListScrubbed.Count;
                     }
 
                     //Set text progress manually, before it gets reported
-                    progressWindow.OverallTextBlk.Text = String.Format("0 of {0} compressed items processed...", compressedItems);
+                    progressWindow.OverallTxt.Text = String.Format("0 of {0} compressed items processed... \r\n0 of {1} total items processed...", numCompressedItems, numTotalItems);
 
 
                     //make copies of global variables that may be changed within the following loop
@@ -271,40 +285,40 @@ namespace ZIPExpander
                                 //also add the items to a decompressed item list outside both loops, for deleting the source zips later
                                 decompressedCompressedItemList.AddRange(stillCompressedItemsThisLoop);
                                 //add counts of found items to total progress counters
-                                totalItems += stillCompressedItemsThisLoop.Count;
-                                compressedItems += stillCompressedItemsThisLoop.Count;
+                                numTotalItems += stillCompressedItemsThisLoop.Count;
+                                numCompressedItems += stillCompressedItemsThisLoop.Count;
 
                             }
                             //increment progress counters
-                            compressedItemsProcessed++;
-                            totalItemsProcessed++;
+                            numCompressedItemsProcessed++;
+                            numTotalItemsProcessed++;
                             //report progress
-                            progressWindow.AllItemsProgBar.Value = (1.0d / totalItems * totalItemsProcessed * 100.0d);
-                            this.taskBarItemInfo1.ProgressValue = (1.0d / totalItems * totalItemsProcessed * 100.0d) / 100;
-                            progressWindow.OverallTextBlk.Text = String.Format("{0} of {1} compressed items processed...", compressedItemsProcessed, compressedItems);
+                            progressWindow.AllItemsProgBar.Value = (1.0d / numTotalItems * numTotalItemsProcessed * 100.0d);
+                            this.taskBarItemInfo1.ProgressValue = (1.0d / numTotalItems * numTotalItemsProcessed * 100.0d) / 100;
+                            progressWindow.OverallTxt.Text = String.Format("{0} of {1} compressed items processed... \r\n{2} of {3} total items processed...", numCompressedItemsProcessed, numCompressedItems, numTotalItemsProcessed, numTotalItems);
 
 
                         }
                         //once the list is thru, assign the returned items to the compressed items list to be decompressed in the next loop
                         doLoopCompressedItemList = stillCompressedItemList;
                         //count the items still compressed for the while loop
-                        itemsLeft = stillCompressedItemList.Count;
+                        numItemsLeft = stillCompressedItemList.Count;
                         //set the source path to the target path as we'll be decompressing from the target now?
                         doLoopSourceTextPath = targetTextPath;
                         //set delete items true if there's anything to remove
-                        if (itemsLeft > 0)
+                        if (numItemsLeft > 0)
                         {
                             deleteFromDecompressedItems = true;
                         }
 
                     }
                     //while any compressed items are returned we must keep decompressing
-                    while (itemsLeft != 0);
+                    while (numItemsLeft != 0);
 
                     //at this point all compressed files are decompressed
                     //I set the progress text to reflect this as the bars/text won't indicate progress otherwise.
-                    progressWindow.CurProgTxt.Text = "Done!";
-                    progressWindow.WorkingProgTxt.Text = "Waiting for copy to finish...";
+                    progressWindow.CurProgTxt.Text = "Decompression done!";
+                    progressWindow.WorkingProgTxt.Text = String.Format("{0} of {1} compressed items processed", numCompressedItemsProcessed, numCompressedItems);
 
                     //if the last item decompressed was successful do these final tasks
                     if (decompressLoopResult != "")
@@ -313,7 +327,7 @@ namespace ZIPExpander
                         //since an extraction would normally do so.
                         if (copyItems)
                         {
-                            int unCompressedItemsProcessed = 0;
+                            progressWindow.CurProgTxt.Text = "Decompression done! Copying uncompressed files...";
                             //itterate thru and copy every item that wasn't compressed
                             foreach (string uncompressedItem in uncompressedItemListScrubbed)
                             {
@@ -351,13 +365,16 @@ namespace ZIPExpander
                                     }
                                 }
                                 //increment progress counter
-                                totalItemsProcessed++;
-                                unCompressedItemsProcessed++;
+                                numTotalItemsProcessed++;
+                                numUnCompressedItemsProcessed++;
                                 //set progress values
-                                progressWindow.AllItemsProgBar.Value = (1.0d / totalItems * totalItemsProcessed * 100.0d);
-                                this.taskBarItemInfo1.ProgressValue = (1.0d / totalItems * totalItemsProcessed * 100.0d) / 100;
-                                progressWindow.OverallTextBlk.Text = String.Format("{0} of {1} uncompressed files copied...", unCompressedItemsProcessed, unCompressedItems);
+                                progressWindow.AllItemsProgBar.Value = (1.0d / numTotalItems * numTotalItemsProcessed * 100.0d);
+                                this.taskBarItemInfo1.ProgressValue = (1.0d / numTotalItems * numTotalItemsProcessed * 100.0d) / 100;
+                                progressWindow.OverallTxt.Text = String.Format("{0} of {1} uncompressed files copied\r\n{2} of {3} total items processed", numUnCompressedItemsProcessed, numUnCompressedItems, numTotalItemsProcessed, numTotalItems);
+                                progressWindow.WorkingProgTxt.Text = String.Format("{0} of {1} compressed items processed...", numCompressedItemsProcessed, numCompressedItems);
+
                             }
+                            progressWindow.WorkingProgTxt.Text = String.Format("{0} of {1} compressed items processed \r\n{2} of {3} uncomcompressed items copied", numCompressedItemsProcessed, numCompressedItems, numUnCompressedItemsProcessed, numUnCompressedItems);
                         }
 
                         //if items were not copied because the source was a .zip or source and target were the same folder
@@ -411,8 +428,15 @@ namespace ZIPExpander
                             Utils.OpenDirectory(TargetTextBx.Text);
                         }
 
+                        progressWindow.HeaderTxt.Text = "Expansion complete";
+                        progressWindow.CurProgTxt.Text = "All done!";
+                        progressWindow.OverallTxt.Text = String.Format("{0} of {1} total items processed", numTotalItemsProcessed, numTotalItems);
+                        progressWindow.CancelBtn.Content = "Exit";
+                        progressWindow.Activate();
+
+
+
                         //and close the application since its not needed any more
-                        Close();
                     }
 
 
@@ -420,15 +444,15 @@ namespace ZIPExpander
                 // this will catch any exceptions as they bubble up from other threads and report them to this ui thread
                 catch (Exception ex)
                 {
+                    progressWindow.Close();
                     MessageBox.Show(string.Format("An error occured during extraction: \r\n \r\n {0}", ex), "Extraction Problem",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 //if decompressResult was false we don't close the app, instead re-enable the button
-                //and close the progress window so the extraction can be attempted again.
+
                 this.taskBarItemInfo1.ProgressState = TaskbarItemProgressState.None;
                 ExtractBtn.IsEnabled = true;
-                progressWindow.Close();
                 this.Activate();
 
             }

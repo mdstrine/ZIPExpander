@@ -19,8 +19,9 @@
             <ColumnDefinition Width="27*"/>
             <ColumnDefinition Width="219*"/>
         </Grid.ColumnDefinitions>
-        <Border BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="7" HorizontalAlignment="Left" Height="262" VerticalAlignment="Center" Width="350" Grid.Column="3"/>
-        <Label Grid.Column="8" Content="Extracting, please wait...&#xD;&#xA;" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="135" Height="31"/>
+        <Border BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="7" HorizontalAlignment="Left" Height="262" VerticalAlignment="Center" Width="350" Grid.Column="3">
+            <TextBlock x:Name="HeaderTxt" HorizontalAlignment="Center" Height="20" Margin="0,9,0,0" TextWrapping="Wrap" Text="Expanding, please wait..." VerticalAlignment="Top" Width="132" TextAlignment="Center"/>
+        </Border>
         <ProgressBar x:Name="AllItemsProgBar" Grid.ColumnSpan="6" HorizontalAlignment="Left" Height="12" Margin="24,160,0,0" VerticalAlignment="Top" Width="300" Grid.Column="4">
             <ProgressBar.Effect>
                 <BlurEffect/>
@@ -32,9 +33,10 @@
             </ProgressBar.Effect>
         </ProgressBar>
         <Button x:Name="CancelBtn" Content="Cancel" HorizontalAlignment="Left" Height="25" Margin="21,204,0,0" VerticalAlignment="Top" Width="100" IsCancel="True" Click="CancelBtn_Click" Grid.Column="8" Grid.ColumnSpan="2"/>
+
         <TextBlock x:Name="CurProgTxt"  Grid.Column="4"  HorizontalAlignment="Left" Height="42" Margin="25,53,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top" Grid.ColumnSpan="6" Width="298" FontSize="9"/>
 
-        <TextBlock x:Name="OverallTextBlk" Grid.Column="4" HorizontalAlignment="Left" Margin="25,174,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top" Grid.ColumnSpan="6" Width="293" FontSize="9"/>
+        <TextBlock x:Name="OverallTxt" Grid.Column="4" HorizontalAlignment="Left" Margin="25,174,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top" Grid.ColumnSpan="6" Width="293" FontSize="9" Height="30"/>
         <ProgressBar x:Name="WorkingProgBar" Grid.ColumnSpan="6" HorizontalAlignment="Left" Height="12" Margin="24,100,0,0" VerticalAlignment="Top" Width="300" Grid.Column="4">
             <ProgressBar.Effect>
                 <BlurEffect/>

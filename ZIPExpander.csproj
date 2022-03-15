@@ -13,10 +13,10 @@
     <Platforms>AnyCPU;x64</Platforms>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <ApplicationIcon>td-icon-8.ico</ApplicationIcon>
-    <AssemblyVersion>0.9.3</AssemblyVersion>
-    <Version>0.9.3</Version>
-    <FileVersion>0.9.3</FileVersion>
-    <Description>v0.9.3 build date: 3/10/2022</Description>
+    <AssemblyVersion>0.9.4</AssemblyVersion>
+    <Version>0.9.4</Version>
+    <FileVersion>0.9.4</FileVersion>
+    <Description>v0.9.4 build date: 3/11/2022</Description>
     <Company>Veeam Software</Company>
     <Product>Total Decompression</Product>
     <PackageIcon>td icon 8.png</PackageIcon>

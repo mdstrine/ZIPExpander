@@ -24,6 +24,7 @@ namespace ZIPExpander
             System.Windows.Application.Current.Shutdown();
         }
 
+
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
@@ -31,6 +32,7 @@ namespace ZIPExpander
             // Begin dragging the window
             this.DragMove();
         }
+
 
     }
 }
