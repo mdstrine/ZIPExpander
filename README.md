@@ -11,3 +11,5 @@ Known issues:
 -After the decopmression is started, if a file in the source is changed/removed the decompression loop will throw an error, EG file does not exist. 
 Same that adding a file to a folder being decompressed, it wont be considered for decompression.
 This is really only a problem for huge, long running decompressions.
+
+-after extraction is complete the progress window stays open as intended. Another extraction can be started in this state as the main window button returns to enabled. If another extraction is started another progress window appears and now there are two...
