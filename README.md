@@ -11,6 +11,11 @@ If using a folder as a source, the program will also copy any uncompressed items
 Requires .net 6.0.2, will be prompted to install on startup.
 
 
+![image](https://user-images.githubusercontent.com/101219572/158442909-9ba8b037-1c6d-4b95-adbd-fbffb903d2d4.png)
+
+
+
+
 Known issues: 
 
 -Number of compressed items may increase during extraction, this is normal as the program will detect if an extracted item contains any compressed items within and will add those to the total item count
