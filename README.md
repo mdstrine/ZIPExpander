@@ -44,7 +44,7 @@ This is really only a problem for huge, long running decompressions.
 
 - Detection of .7z and .gz files are based on the file extension. If for some reason a 7z compressed file has the extension .zip, it will not process correctly. Same that if a source .zip is not actually a .zip, it won't know. 
 
-- Likely unoptimized 
+- Likely unoptimized, speed is largely dependent on CPU power and disk speed (SSDs are much faster)
 
 
 
