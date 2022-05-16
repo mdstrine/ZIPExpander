@@ -17,12 +17,16 @@
     <Version>0.9.5</Version>
     <FileVersion>0.9.5</FileVersion>
     <Description>v0.9.5 build date: 5/16/2022
+	
+Readme: https://github.com/mdstrine/ZIPExpander
       
 Uses Libraries:
 SharpCompress by Adam Hathcock (modified)
 WindowsAPICodePack by rpastric, contre, dahall
 
 Please report any issues directly to me with a screenshot.
+
+
     </Description>
     <Company></Company>
     <Product>ZIPExpander: Total Decompression</Product>
