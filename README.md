@@ -65,6 +65,10 @@ Future plans:
 - Add an "active log" of files being decompressed 
 
 
+Building in VS 2022
+
+run: dotnet publish -p:PublishSingleFile=true  -r win-x64 -c Release --self-contained false
+
 
 
 Uses Libraries:
