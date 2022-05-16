@@ -35,8 +35,6 @@ Hit Expand and wait!
 
 Caution: 
 This program does not check expected output file size or your free disk space before decompressing. 
-While it is running it should let you know if there is not enough free space to continue the decompression.
-
 
 
 Known issues: 
@@ -76,4 +74,4 @@ SharpCompress by Adam Hathcock (modified by me to be aware of Windows file name 
 WindowsAPICodePack by rpastric, contre, dahall
 
 
-Please report any issues with a screenshot to michael.strine@veeam.com
+Please report any issues with a screenshot to michael.strine@veeam.com or create a github issue
