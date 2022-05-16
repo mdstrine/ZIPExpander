@@ -66,10 +66,10 @@ Future plans:
 
 
 Building in VS 2022
-
 run: dotnet publish -p:PublishSingleFile=true  -r win-x64 -c Release --self-contained false
 
-
+Compiled releases:
+https://github.com/mdstrine/ZIPExpander/releases
 
 Uses Libraries:
 SharpCompress by Adam Hathcock (modified by me to be aware of Windows file name restrictions)
