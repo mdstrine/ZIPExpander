@@ -1,115 +1,157 @@
-﻿using Ionic.Zip;
+﻿using SharpCompress.Common;
+using SharpCompress.Readers;
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
-using ZipFile = Ionic.Zip.ZipFile;
+
 
 
 namespace ZIPExpander
 {
-    //This code runs the decompression of a single file, .zip or .gz async to allow the UI thread to update.
-    //progress is reported to the UI through interfaces.
-    //dotnetzip libraries are used for zip due to its easy progress reporting.
-    //System.IO.Compression is used for gzip.
-    //Return type is Task<bool>, bool being used to determine if a file was decompressed or not. 
-    //Basically if there is a problem during extraction the return will be false and a few post
-    //extraction methods won't be ran (like closing the UI)
+    //This code runs the decompression of a single file and reports progress through interfaces. 
+    //theres a potential file naming problem, if the target already has a file with the name it will be overwitten.
+    //This doesn't matter in many cases I think as I decompress into a new folder with "_Extracted" as a postfix and items within a compressed file should not have the same name.
     internal class Decompressor
     {
-        //theres a file naming problem rn, if the target already has a file with the name it will be overwitten, even if it was just decompressed
-        //appending is difficult becuase the file name isn't created until during the unzip. 
-        //could compare the directory to see if any files with the name appear and append, BUT if we try to overwrite a target which has 
-        //already been written to before its going to rename every single previously decompressed file...
         public static async Task<string> RunDecompressor(IProgress<int> progress, IProgress<int> progressWorking, IProgress<string> progressFile, IProgress<string> progressWorkingFile, string sourcePath, string targetPath)
         {
-            //If its a .zip decompress it
-            if (Path.GetExtension(sourcePath) == ".zip")
-            {
-                try
-                {
-                    //need to check the size of the file or make sure it's actually a zip?
-                    if(new FileInfo(sourcePath).Length == 0)
-                    {
-                        return "";
-                    }
+            //report the name of the compressed folder we are working on now.
+            progressFile.Report(sourcePath);
 
-                    //instanciate a zipfile instanace and open the file for read
-                    using ZipFile zip = ZipFile.Read(sourcePath);
-                   
-                    //collect events from dotnetzip for progress reporting
-                    zip.ExtractProgress += (sender, e) =>
-                    {                        
-                        if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
-                        {   
-                            progressWorking.Report((int)(1.0d / e.TotalBytesToTransfer * e.BytesTransferred * 100.0d));
-                            progressWorkingFile.Report(e.CurrentEntry.ToString());
-                        }
-                        if (e.EventType == ZipProgressEventType.Extracting_AfterExtractEntry)
-                        {
-                            progress.Report((int)(1.0d / e.EntriesTotal * e.EntriesExtracted * 100.0d));
-                            progressFile.Report(e.ArchiveName.ToString());
-                        }
-                       
-
-                    };
-
-                    try
-                    {
-                        //run the actual task
-                        await Task.Run(() => zip.ExtractAll(targetPath, ExtractExistingFileAction.OverwriteSilently));
-                        return targetPath;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.ToString());
-                    }
-
-                }
-                //bubble exceptions up to the UI thread
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.ToString());
-                }
-
-            }
-
-            //else if its a .gz decompress gz
-            else if (Path.GetExtension(sourcePath) == ".gz")
-            {
-                try
-                {
-                    //fix the target path as this library requires the file name in the target path
-                    string targetPathFixed = targetPath + "\\" + Path.GetFileNameWithoutExtension(sourcePath);
-                    //change the UI to show the current file being worked on
-                    //theres no simple way to calculate a progress bar with this library
-                    progressFile.Report(sourcePath);
-                    progressWorkingFile.Report(sourcePath);
-                    //open the input and output files then direct the stream to decompress
-                    using (var input = File.OpenRead(sourcePath))
-                    using (var output = File.OpenWrite(targetPathFixed))
-                    using (var gz = new GZipStream(input, CompressionMode.Decompress))
-                    {
-                        await gz.CopyToAsync(output);
-                    }
-                    return targetPathFixed;
-                }
-                //bubble exceptions up to the UI thread
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.ToString());
-                }
-            }
-
-            //is not a .zip or .gz, do nothing.
-            else
+            //if the file has 0 length, stop and return nothing to prevent errors
+            if (new FileInfo(sourcePath).Length == 0)
             {
                 return "";
             }
 
 
+            if (Path.GetExtension(sourcePath) == ".7z")
+            //When handling .7z files I found I needed to specifically tell the library to open them as a .7z
+            {
+                try
+                {
+                    using var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(sourcePath);
+                    using (var reader = archive.ExtractAllEntries())
+                    {
+                        //set up entry progress reporting
+                        reader.EntryExtractionProgress += (sender, e) =>
+                        {
+                            if (e.ReaderProgress != null)
+                            {
+                                progressWorking.Report(e.ReaderProgress.PercentageRead);
+                            }
+                        };
 
+                        //report which entry is being worked on
+                        progressWorkingFile.Report(sourcePath);
+                        try
+                        {
+                            await Task.Run(() => reader.WriteAllToDirectory(targetPath, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true }));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.ToString());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.ToString());
+                }
+            }
+
+            else
+            {
+                if (Path.GetExtension(sourcePath) == ".gz")
+                //when handling GZ files with this library the files must have the name in the gz file's header to use the standard "writeAllToDirectory" method. Many linux created GZ files do not have this information and fail to extract
+                //since a GZ only has one entry per GZ file, I just open the gz, move to the next entry and use "writeentrytofile" while specifying the output file name to be the same as the input file name
+                {
+                    try
+                    {
+                        using var archive = SharpCompress.Archives.GZip.GZipArchive.Open(sourcePath);
+                        using (var reader = archive.ExtractAllEntries())
+                        {
+                            //set up entry progress reporting
+                            reader.EntryExtractionProgress += (sender, e) =>
+                            {
+                                if (e.ReaderProgress != null)
+                                {
+                                    progressWorking.Report(e.ReaderProgress.PercentageRead);
+                                }
+                            };
+
+                            while (reader.MoveToNextEntry())
+                            {
+                                //since a GZ only has one file we can just report the sourcePath as what's being worked on
+                                progressWorkingFile.Report(sourcePath);
+                                try
+                                {
+                                    string fullTargetPath = targetPath + "\\" + Path.GetFileNameWithoutExtension(sourcePath);
+                                    await Task.Run(() => reader.WriteEntryToFile(fullTargetPath, new ExtractionOptions() { Overwrite = true }));
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(ex.ToString());
+                                }
+
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.ToString());
+                    }
+                }
+
+                else if (Path.GetExtension(sourcePath) != ".7z" && Path.GetExtension(sourcePath) != ".gz")
+                //if its any other type of compressed file the library seems to figure it out reliably 
+                {
+                    try
+                    {
+                        using (Stream stream = File.OpenRead(sourcePath))
+                        using (var reader = ReaderFactory.Open(stream))
+                        {
+                            //set up entry progress reporting
+                            reader.EntryExtractionProgress += (sender, e) =>
+                            {
+                                if (e.ReaderProgress != null)
+                                {
+                                    progressWorking.Report(e.ReaderProgress.PercentageRead);
+                                }
+                            };
+
+                            while (reader.MoveToNextEntry())
+                            {
+
+                                if (!reader.Entry.IsDirectory)
+                                {
+                                    //report which entry is being worked on
+                                    progressWorkingFile.Report(reader.Entry.Key);
+                                    try
+                                    {
+                                        await Task.Run(() => reader.WriteEntryToDirectory(targetPath, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true }));
+                                        //calculate progress of entire compressed file and report
+                                        progress.Report((int)(1.0d / stream.Length * stream.Position * 100.0d));
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw new Exception(ex.ToString());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.ToString());
+                    }
+                }
+
+            }
+            //I return the target path of the decompressed item to be used later
+            return targetPath;
         }
-
     }
 }
+
+

@@ -127,8 +127,17 @@ namespace ZIPExpander
                 string targetEndOnly = fullSourceItemPath[fullSourcePath.Length..].TrimStart(Path.DirectorySeparatorChar);
                 if (isCompressed)
                 {
+                    //used to replace the periods in the path when decompressing a compressed item, I'm not sure why, maybe to prevent a folder with an extension? shouldnt matter if I'm adding _extracted?
+                    //It causes problems if there are periods in the path such as a user profile michael.strine so I reverted to not replacing periods.
+                    //old code:
+                    //string targetPathReplacePeriods = targetPath.Replace(".", "_");
+                    //string targetEndOnlyWithoutExt = Path.ChangeExtension(targetEndOnly, null);
+                    //return targetPathReplacePeriods + "\\" + targetEndOnlyWithoutExt + "_Extracted";
+
                     string targetEndOnlyWithoutExt = Path.ChangeExtension(targetEndOnly, null);
                     return targetPath + "\\" + targetEndOnlyWithoutExt + "_Extracted";
+
+
                 }
                 else
                 {
@@ -144,6 +153,17 @@ namespace ZIPExpander
 
         }
 
+        public static bool IsCompressedExtAny(string file)
+        {
+            if ((Path.GetExtension(file) == ".zip") || (Path.GetExtension(file) == ".gz") || (Path.GetExtension(file) == ".tar") || (Path.GetExtension(file) == ".tgz") || (Path.GetExtension(file) == ".7z") || (Path.GetExtension(file) == ".rar"))
+            { 
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
 }

@@ -32,7 +32,7 @@
                 <BlurEffect/>
             </ProgressBar.Effect>
         </ProgressBar>
-        <Button x:Name="CancelBtn" Content="Cancel" HorizontalAlignment="Left" Height="25" Margin="21,204,0,0" VerticalAlignment="Top" Width="100" IsCancel="True" Click="CancelBtn_Click" Grid.Column="8" Grid.ColumnSpan="2"/>
+        <Button x:Name="CancelBtn" Content="Cancel Task" HorizontalAlignment="Left" Height="25" Margin="54,205,0,0" VerticalAlignment="Top" Width="100" IsCancel="True" Click="CancelBtn_Click" Grid.Column="9"/>
 
         <TextBlock x:Name="CurProgTxt"  Grid.Column="4"  HorizontalAlignment="Left" Height="42" Margin="25,53,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top" Grid.ColumnSpan="6" Width="298" FontSize="9"/>
 
@@ -43,6 +43,7 @@
             </ProgressBar.Effect>
         </ProgressBar>
         <TextBlock x:Name="WorkingProgTxt"  Grid.Column="4"  HorizontalAlignment="Left" Height="36" Margin="25,0,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Center" Grid.ColumnSpan="6" Width="298" FontSize="9"/>
+        <Button x:Name="CloseBtn" Content="Close Progress" HorizontalAlignment="Left" Height="25" Margin="22,205,0,0" VerticalAlignment="Top" Width="100" Click="CloseBtn_Click" Grid.Column="6" Grid.ColumnSpan="4" IsEnabled="False"/>
 
     </Grid>
 </Window>

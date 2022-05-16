@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace ZIPExpander
@@ -12,6 +13,7 @@ namespace ZIPExpander
         {
             InitializeComponent();
             this.ShowInTaskbar = false;
+            //AllItemsProgBar.Style = ProgressBarStyle.Marquee;
         }
 
         private void CurrentItemProgBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -33,6 +35,10 @@ namespace ZIPExpander
             this.DragMove();
         }
 
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
 
     }
 }

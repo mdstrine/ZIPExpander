@@ -13,17 +13,27 @@
     <Platforms>AnyCPU;x64</Platforms>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <ApplicationIcon>td-icon-8.ico</ApplicationIcon>
-    <AssemblyVersion>0.9.4</AssemblyVersion>
-    <Version>0.9.4</Version>
-    <FileVersion>0.9.4</FileVersion>
-    <Description>v0.9.4 build date: 3/11/2022</Description>
-    <Company>Veeam Software</Company>
-    <Product>Total Decompression</Product>
+    <AssemblyVersion>0.9.5</AssemblyVersion>
+    <Version>0.9.5</Version>
+    <FileVersion>0.9.5</FileVersion>
+    <Description>v0.9.5 build date: 5/16/2022
+      
+Uses Libraries:
+SharpCompress by Adam Hathcock (modified)
+WindowsAPICodePack by rpastric, contre, dahall
+
+Please report any issues directly to me with a screenshot.
+    </Description>
+    <Company></Company>
+    <Product>ZIPExpander: Total Decompression</Product>
     <PackageIcon>td icon 8.png</PackageIcon>
-    <Authors>Henrik/Dino Chiesa,rpastric,contre,dahall</Authors>
-    <Copyright>Created by Michael Strine</Copyright>
-    
+	<Authors>-</Authors>
+    <Copyright>Created by Michael Strine for Veeam Software 2022</Copyright>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="OldDecompressor.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="blankicon.png" />
@@ -36,9 +46,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+    <PackageReference Include="SharpCompress" Version="0.30.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharpCompress">
+      <HintPath>..\..\..\.packages\SharpCompress.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
