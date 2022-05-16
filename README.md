@@ -2,25 +2,20 @@ ZIPExpander: Total Decompression v0.9.5
 
 Requires .net 6.0.2 (you will be prompted to install on first run if not already installed)
 
-
+ 
+ 
 Do you have a zip or a folder which has a lot of embedded compressed items within? 
-
 Do you wish you could decompress all of those compressed items with just one click?
-
 This program may help you. 
+ 
 
-
-It will decompress all .zip, .gz, .tar, .tgz, .7z, and .rar files within the given source. 
-
-It will also check for and decompress any compressed items embeded within items it has already decompressed.
-
-
-Meaning anything which is compressed in the given source should be completely decompressed. 
-
+ 
+It will decompress the contents of all .zip, .gz, .tar, .tgz, .7z, and .rar files within the given source. 
+It will also check the contents which were decompressed for any embeded compressed files and decompress those as well.
 The given source should be completely "expanded" when the program is finished.
 
-
-
+ 
+ 
 Operation:
 
 Double click the .exe to run
@@ -31,12 +26,13 @@ Give it a target where you want it to decompress everything to.
 
 Hit Expand and wait! 
 
-
-
+ 
+ 
 Caution: 
 This program does not check expected output file size or your free disk space before decompressing. 
 
-
+ 
+ 
 Known issues: 
 
 - The entered source must be a .zip or an uncompressed folder. This is due to me not yet making a custom file browser for the source which is limited to finding only .zip, .gz, .tar, .tgz, .7z, and .rar files.
@@ -52,8 +48,8 @@ This is really only a problem for huge, long running decompressions.
 
 - Likely unoptimized, speed is largely dependent on CPU power and disk speed (SSDs are much faster)
 
-
-
+ 
+ 
 Future plans: 
 
 - Add an "Are you sure?" prompt to closing the progress window (which stops the current extraction).
@@ -62,16 +58,18 @@ Future plans:
 
 - Add an "active log" of files being decompressed 
 
-
+ 
+ 
 Building in VS 2022
 
 run: dotnet publish -p:PublishSingleFile=true  -r win-x64 -c Release --self-contained false
 
-
-
+ 
+ 
 Uses Libraries:
 SharpCompress by Adam Hathcock (modified by me to be aware of Windows file name restrictions)
 WindowsAPICodePack by rpastric, contre, dahall
 
-
+ 
+ 
 Please report any issues with a screenshot to michael.strine@veeam.com or create a github issue
