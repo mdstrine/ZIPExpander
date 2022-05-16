@@ -4,19 +4,27 @@ Requires .net 6.0.2 (you will be prompted to install on first run if not already
 
 
 Do you have a zip or a folder which has a lot of embedded compressed items within? 
+
 Do you wish you could decompress all of those compressed items with just one click?
+
 This program may help you. 
 
 
 It will decompress all .zip, .gz, .tar, .tgz, .7z, and .rar files within the given source. 
+
 It will also check for and decompress any compressed items embeded within items it has already decompressed.
 
+
 Meaning anything which is compressed in the given source should be completely decompressed. 
+
 The given source should be completely "expanded" when the program is finished.
 
 
 
 Operation:
+
+Double click the .exe to run
+
 Feed it a .zip file or a folder.
 
 Give it a target where you want it to decompress everything to. 
