@@ -12,7 +12,7 @@
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="51*"/>
         </Grid.ColumnDefinitions>
-        <Label x:Name="HeadingLbl" Content="Select a source .zip file or a folder with compressed files within its subfolders&#xA; &#xA;All .zip, .gz, .tar, .tgz, .7z, and .rar files inside the source will be completely decompressed to the target folder&#xA;&#xA;Existing items in the target will be overwritten&#xA;" HorizontalAlignment="Left" Margin="6,14,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FF1A00D4" Grid.Column="1" Grid.ColumnSpan="3" Width="686"/>
+        <Label x:Name="HeadingLbl" Content="Select a source .zip file or a folder with compressed files within its subfolders&#xA; &#xA;All .zip, .gz, .tar, .tgz, .gzip, .7z, and .rar files inside the source will be completely decompressed to the target&#xA;&#xA;Existing items in the target will be overwritten&#xA;" HorizontalAlignment="Left" Margin="6,14,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FF1A00D4" Grid.Column="1" Grid.ColumnSpan="3" Width="686"/>
         <Label x:Name="SourceLbl" Content="Source .zip or folder to expand:" HorizontalAlignment="Left" Margin="6,146,0,0" VerticalAlignment="Top" Grid.Column="1"/>
         <Label x:Name="TargetLbl" Content="Files will be extracted to this folder:" HorizontalAlignment="Left" Margin="6,239,0,0" VerticalAlignment="Top" Grid.Column="1"/>
         <TextBox x:Name="SourceTextBx" HorizontalAlignment="Left" Margin="11,172,0,0" TextWrapping="NoWrap" Text="Click Browse..." VerticalAlignment="Top" Width="565" Height="20" Foreground="#BF000000" FontStyle="Italic" TextChanged="SourceTextBx_TextChanged" Grid.Column="1" InputScope="FullFilePath"/>

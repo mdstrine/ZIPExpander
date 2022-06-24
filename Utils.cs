@@ -116,6 +116,9 @@ namespace ZIPExpander
             //I'm sure this will break in some situation - If the source is extracted to a different target path,
             //and the item extracted is another compressed item, that compressed item has a different source path than what was given during job start.
 
+            //I can see a problem if we have two compressed files with the same name, eg MyLogs.zip and MyLogs.gz - these would both extract to a folder named "MyLogs_Extracted" and if those have files with the same name within, those files will be overwritten
+            //consider checking the list of compressed items in the for loop for any items with the same name without extension. If thats the result somehow add a number to and increment the _Extracted postfix so those get put into different folders
+
             string sourcePath = sourcePathIn;
             string sourceItemPath = sourceItemIn;
             string targetPath = targetPathIn;
@@ -155,7 +158,7 @@ namespace ZIPExpander
 
         public static bool IsCompressedExtAny(string file)
         {
-            if ((Path.GetExtension(file) == ".zip") || (Path.GetExtension(file) == ".gz") || (Path.GetExtension(file) == ".tar") || (Path.GetExtension(file) == ".tgz") || (Path.GetExtension(file) == ".7z") || (Path.GetExtension(file) == ".rar"))
+            if ((Path.GetExtension(file) == ".zip") || (Path.GetExtension(file) == ".gz") || (Path.GetExtension(file) == ".tar") || (Path.GetExtension(file) == ".tgz") || (Path.GetExtension(file) == ".7z") || (Path.GetExtension(file) == ".rar") || (Path.GetExtension(file) == ".gzip"))
             { 
                 return true; 
             }

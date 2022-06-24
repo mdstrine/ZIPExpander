@@ -13,10 +13,10 @@
     <Platforms>AnyCPU;x64</Platforms>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <ApplicationIcon>td-icon-8.ico</ApplicationIcon>
-    <AssemblyVersion>0.9.5</AssemblyVersion>
-    <Version>0.9.5</Version>
-    <FileVersion>0.9.5</FileVersion>
-    <Description>v0.9.5 build date: 5/16/2022
+    <AssemblyVersion>0.9.6</AssemblyVersion>
+    <Version>0.9.6</Version>
+    <FileVersion>0.9.6</FileVersion>
+    <Description>v0.9.6 build date: 6/24/2022
 	
 Readme: https://github.com/mdstrine/ZIPExpander
       

@@ -11,6 +11,7 @@ namespace ZIPExpander
     //This code runs the decompression of a single file and reports progress through interfaces. 
     //theres a potential file naming problem, if the target already has a file with the name it will be overwitten.
     //This doesn't matter in many cases I think as I decompress into a new folder with "_Extracted" as a postfix and items within a compressed file should not have the same name.
+    //I could see a problem if we have two compressed files with the same name, eg MyLogs.zip and MyLogs.gz - these would both extract to a folder named "MyLogs_Extracted" and if those have files with the same name within, those files will be overwritten
     internal class Decompressor
     {
         public static async Task<string> RunDecompressor(IProgress<int> progress, IProgress<int> progressWorking, IProgress<string> progressFile, IProgress<string> progressWorkingFile, string sourcePath, string targetPath)

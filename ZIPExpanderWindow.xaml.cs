@@ -233,18 +233,26 @@ namespace ZIPExpander
                     //these variables are modified when compressed items are found within the decompressed items
                     //however the original values are kept as they are still needed for later operations
                     string doLoopSourceTextPath = sourceTextPath;
-                    List<string> doLoopCompressedItemList = new(compressedItemList);
+                    List<string> forLoopCompressedItemList = new(compressedItemList);
 
                     //itterate over every compressed item found
-                    //do while loop ensures if any embedded compressed files are decompressed, that those files will also be decompressed
+                    //do while loop is used to decompress embedded compressed files.
+                    //Essentially within the do loop is a for loop
+                    //the for loop runs as many times as there are items in the compressedItemsList which was copied in the previous line
+                    //a path is created for the target item then the decompression is ran on the item in the current itteration
+                    //the return from the decompressor method is the path to the folder created during the decompression 
+                    //if this folder is not empty I check for compressed items within, found items are added to the do loops stillcompresseditems list during each itteration of the for loop
+                    //the stillcompresseditemslist is copied to the forLoopCompressedItemsList and counted
+                    //if the number of items is >0, the do while loops again and the decompression is ran on items copied from the stillcompresseditems list
+                    //the loop continues until there are no more compressed items found.
                     do
                     {
-
+                        //make a new list for items that are still compressed, this is used within the following for loop to store
                         List<string> stillCompressedItemList = new();
 
-                        for (int i = 0; i < doLoopCompressedItemList.Count; i++)
+                        for (int i = 0; i < forLoopCompressedItemList.Count; i++)
                         {
-                            string compressedItem = doLoopCompressedItemList[i];
+                            string compressedItem = forLoopCompressedItemList[i];
                             FileFinder fileFinderDecompressor = new();
                             List<string> stillCompressedItemsThisLoop = new();
 
@@ -276,6 +284,7 @@ namespace ZIPExpander
                             {
                                 try
                                 {
+                                    //NOTE the return from the decompressor task IS NOT the file which was decompressed, just the path
                                     decompressResult = await Task.Run(() => Decompressor.RunDecompressor(progressCur, progressWorking, progressFileName, progressWorkingFileName, compressedItem, itemTargetTextPath));
                                     break;
                                 }
@@ -286,8 +295,6 @@ namespace ZIPExpander
                                 }
                             }
 
-                            //if the returned folder is not empty, look for zips in the output folder
-                            //NOTE the return from the decompressor task IS NOT the file which was decompressed, just the path
                             //assign the string to this flag for finishing processes
                             decompressLoopResult = decompressResult;
 
@@ -321,14 +328,15 @@ namespace ZIPExpander
                             progressWindow.OverallTxt.Text = String.Format("{0} of {1} compressed items processed... \r\n{2} of {3} total items processed...", numCompressedItemsProcessed, numCompressedItems, numTotalItemsProcessed, numTotalItems);
 
 
-                        }
-                        //once the list is thru, assign the returned items to the compressed items list to be decompressed in the next loop
-                        doLoopCompressedItemList = stillCompressedItemList;
+                        } //for loop complete
 
-                        //count the items still compressed for the while loop
+                        //after the for loop list is thru, assign the list of found still compressed items to the list used by the for loop to be decompressed in the next do loop
+                        forLoopCompressedItemList = stillCompressedItemList;
+
+                        //count the items still compressed, if >0 we run decompression do loop again
                         numItemsLeft = stillCompressedItemList.Count;
 
-                        //set the source path to the target path as we'll be decompressing from the target now?
+                        //set the source path to the target path as we'll be decompressing from the "target" now
                         doLoopSourceTextPath = targetTextPath;
 
                         //set delete items true if there's anything to remove
@@ -339,7 +347,8 @@ namespace ZIPExpander
 
                     }
                     //while any compressed items are returned we must keep decompressing and start the do loop over again
-                    while (numItemsLeft != 0);
+                    while (numItemsLeft != 0); //end of do while loop
+
 
                     //!!!!!! At this point all compressed files should be decompressed
                     //I set the progress text to reflect this as the bars/text won't indicate progress otherwise.
@@ -347,6 +356,7 @@ namespace ZIPExpander
                     progressWindow.WorkingProgTxt.Text = String.Format("{0} of {1} compressed items processed", numCompressedItemsProcessed, numCompressedItems);
 
                     //if the last item decompressed was successful, do these final tasks
+                    //my check here should be better, an edge case could happen where the last item is skipped and that means items wont be copied or cleaned up....
                     if (decompressLoopResult != "")
                     {
                         //if the source is a folder we might need to copy uncompressed items to the target,
@@ -354,6 +364,7 @@ namespace ZIPExpander
                         if (copyItems)
                         {
                             progressWindow.CurProgTxt.Text = "Decompression done! Copying uncompressed files...";
+
                             //itterate thru and copy every item that wasn't compressed
                             foreach (string uncompressedItem in uncompressedItemListScrubbed)
                             {
@@ -367,7 +378,7 @@ namespace ZIPExpander
                                     continue;
                                 }
 
-                                //TO DO: check if the file already exists on the target and append the name if so?
+                                //TO DO maybe: check if the file already exists on the target and append the name if so
 
                                 //run the copy async so we get progress updates
                                 DialogResult result = System.Windows.Forms.DialogResult.Retry;
@@ -381,6 +392,8 @@ namespace ZIPExpander
                                         {
                                             Directory.CreateDirectory(itemTargetDir);
                                         }
+
+                                        //run the copy task
                                         await Task.Run(() => File.Copy(uncompressedItem, itemTargetTextPath, true));
                                         break;
                                     }
@@ -390,6 +403,7 @@ namespace ZIPExpander
                                         if (result == System.Windows.Forms.DialogResult.Abort) throw;
                                     }
                                 }
+
                                 //increment progress counter during copy
                                 numTotalItemsProcessed++;
                                 numUnCompressedItemsProcessed++;
@@ -406,6 +420,8 @@ namespace ZIPExpander
 
                         //if items were not copied because the source was a .zip or source and target were the same folder
                         //then delete any compressed items since they've been decompressed already.
+
+
                         if (!copyItems)
                         {
                             foreach (string item in compressedItemList)
@@ -428,6 +444,9 @@ namespace ZIPExpander
                         }
 
                         //delete compressed files which were extracted from during the do while loop
+                        //TO DO: move deletion to the decompression loop. Once the files have been decompressed successfully the source compressed item is no longer needed.
+                        //Dont really need to wait until this point
+
                         if (deleteFromDecompressedItems)
                         {
                             foreach (string item in decompressedCompressedItemList)
@@ -478,7 +497,7 @@ namespace ZIPExpander
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
-                //if decompressResult was false because of some problem this code will be exectued 
+                //when everything is done this will put the main window back to its inital state.
                 progressWindow.CloseBtn.IsEnabled = true;
                 this.taskBarItemInfo1.ProgressState = TaskbarItemProgressState.None;
                 ExtractBtn.IsEnabled = true;
