@@ -6,7 +6,7 @@ Requires .net 6.0.2 (you will be prompted to install on first run if not already
  
 
  
-ZipExpander will decompress the contents of all .zip, .gz, .tar, .tgz, .7z, and .rar files within the given source folder or .zip file. 
+ZipExpander will decompress the contents of all .zip, .gz, .tar, .tgz, .gzip, .7z, and .rar files within the given source folder or .zip file. 
 It will also check the contents which were decompressed for any embeded compressed files and decompress those as well.
 The given source file tree should be completely "expanded" when the program is finished.
 
@@ -33,7 +33,7 @@ This program does not check expected output file size or your free disk space be
  
 Known issues: 
 
-- The entered source must be a .zip or an uncompressed folder. This is due to me not yet making a custom file browser for the source which is limited to finding only .zip, .gz, .tar, .tgz, .7z, and .rar files.
+- The entered source must be a .zip or an uncompressed folder. This is due to me not yet making a custom file browser for the source which is limited to finding only .zip, .gz, .tar, .tgz, .gzip, .7z, and .rar files.
 
 - Number of compressed items may increase during extraction, this is normal as the program can only determine if a compressed item had other embeded compressed items within after that item has been decompressed.
 
